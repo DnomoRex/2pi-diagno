@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2π_Diagno | Diagnóstico 360º de Maturidade Digital</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Manrope', system-ui, sans-serif; background:#eef2f6; color:#16222f; }
+  .card { background:#fff; border-radius:14px; border:1px solid #d8e0e8; }
+  select, input { width:100%; border:1px solid #b9c5d1; border-radius:8px; padding:.55rem .7rem; background:#fff; }
+  select:focus, input:focus, button:focus-visible { outline:3px solid #0f9d8a55; border-color:#0f9d8a; }
+  .btn { border-radius:8px; padding:.7rem 1.2rem; font-weight:700; }
+  @media print {
+    body { background:#fff; }
+    .no-print { display:none !important; }
+    .card { break-inside:avoid; border-color:#999; }
+  }
+</style>
+</head>
+<body>
+
+<header class="bg-[#10263b] text-white">
+  <div class="max-w-5xl mx-auto px-5 py-8">
+    <h1 class="text-3xl sm:text-5xl font-extrabold">2π_Diagno</h1>
+    <p class="mt-1 text-lg font-semibold text-[#5fd6c4]">Diagnóstico 360º de Maturidade Digital</p>
+    <p class="mt-2 text-slate-300 max-w-2xl">Avalie Nuvem, Sistemas (ERP/CRM), IA e Segurança em 8 perguntas e receba um laudo de boas práticas.</p>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-5 py-6 space-y-6">
+
+  <section class="card p-5 no-print" id="formArea">
+    <h2 class="text-xl font-extrabold mb-4">1. Dados da empresa</h2>
+    <div class="grid sm:grid-cols-3 gap-4">
+      <label class="block text-sm font-semibold">Nome da empresa
+        <input id="empresa" type="text" placeholder="Ex.: Mercado Bom Preço" class="mt-1 font-normal">
+      </label>
+      <label class="block text-sm font-semibold">Setor de atuação
+        <select id="setor" class="mt-1 font-normal">
+          <option>Varejo</option><option>Indústria</option><option>Serviços</option>
+          <option>Saúde</option><option>Educação</option><option>Outro</option>
+        </select>
+      </label>
+      <label class="block text-sm font-semibold">Porte (colaboradores)
+        <select id="porte" class="mt-1 font-normal">
+          <option>1 a 10</option><option>11 a 50</option><option>51 a 200</option><option>Mais de 200</option>
+        </select>
+      </label>
+    </div>
+
+    <h2 class="text-xl font-extrabold mt-8 mb-1">2. Perguntas estratégicas</h2>
+    <p class="text-sm text-slate-600 mb-4">Escolha a resposta que melhor descreve a empresa hoje.</p>
+    <div id="perguntas" class="space-y-6"></div>
+
+    <div class="flex flex-wrap gap-3 mt-8">
+      <button id="btnCalc" class="btn bg-[#0f9d8a] text-white hover:bg-[#0c8676]">Gerar diagnóstico</button>
+      <button id="btnDemo" class="btn border border-[#0f9d8a] text-[#0c7a6b] hover:bg-[#e3f5f2]">Carregar Caso Exemplo (Demo)</button>
+      <button id="btnLimpar" class="btn border border-slate-400 text-slate-700 hover:bg-slate-100">Limpar</button>
+    </div>
+    <p id="aviso" class="text-red-700 text-sm mt-3 hidden" role="alert"></p>
+  </section>
+
+  <section id="resultado" class="hidden space-y-6">
+    <div class="card p-5">
+      <p class="text-sm text-slate-600" id="idEmpresa"></p>
+      <div class="flex flex-wrap items-center gap-6 mt-2">
+        <div class="text-6xl font-extrabold" id="scoreGeral">0%</div>
+        <div>
+          <span id="selo" class="inline-block px-4 py-1 rounded-full font-bold text-white"></span>
+          <p class="text-sm text-slate-600 mt-2 max-w-md" id="descSelo"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="card p-5">
+        <h3 class="font-extrabold mb-3">Maturidade por pilar</h3>
+        <div class="relative h-72"><canvas id="grafico"></canvas></div>
+      </div>
+      <div class="grid grid-cols-2 gap-4" id="cards"></div>
+    </div>
+
+    <div class="card p-5">
+      <h2 class="text-xl font-extrabold">Laudo de Boas Práticas do Especialista</h2>
+      <p class="text-sm text-slate-600 mb-4">Pilares ordenados por prioridade: o mais frágil vem primeiro.</p>
+      <div id="laudo" class="space-y-5"></div>
+    </div>
+
+    <div class="no-print">
+      <button id="btnPrint" class="btn bg-[#10263b] text-white hover:bg-[#1a3a57]">Imprimir / Exportar Laudo em PDF</button>
+    </div>
+  </section>
+</main>
+
+<footer class="bg-[#10263b] text-slate-300 mt-8">
+  <div class="max-w-5xl mx-auto px-5 py-6 text-sm">
+    <p><strong class="text-white">Privacy by Design (LGPD):</strong> todos os dados preenchidos são processados localmente no seu navegador, sem envio ou armazenamento em bancos de dados externos.</p>
+    <p class="mt-2">Autor: Arthur Fernandes Sodré · Exploração Digital e Fundamentos Tecnológicos</p>
+  </div>
+</footer>
+
+<script>
+const PILARES = [
+  { id:'infra', nome:'Infraestrutura e Nuvem', cor:'#2563eb' },
+  { id:'sist',  nome:'Sistemas (ERP/CRM)',     cor:'#7c3aed' },
+  { id:'ia',    nome:'IA e Automação',         cor:'#0f9d8a' },
+  { id:'seg',   nome:'Segurança e LGPD',       cor:'#d97706' }
+];
+
+const PERGUNTAS = [
+  { p:'infra', t:'Onde ficam os arquivos e sistemas da empresa?',
+    o:['Em computadores locais, sem proteção','Em um servidor local, sem redundância','Parte local, parte em serviços de nuvem','Na nuvem (SaaS, PaaS ou IaaS) com alta disponibilidade'] },
+  { p:'infra', t:'Como é feito o backup dos dados?',
+    o:['Não existe ou é manual em HD externo','Periódico, mas manual','Automatizado em um único destino','Automatizado seguindo a regra 3-2-1'] },
+  { p:'sist', t:'Como a empresa gerencia clientes e vendas (CRM)?',
+    o:['Planilhas soltas e WhatsApp','Planilha centralizada','CRM usado só por parte da equipe','CRM adotado por toda a equipe'] },
+  { p:'sist', t:'Como vendas, financeiro e estoque (ERP) se conectam?',
+    o:['Não se conectam: dados são digitados de novo','Troca manual de planilhas','ERP com integração parcial','ERP e CRM integrados por API, com fonte única da verdade'] },
+  { p:'ia', t:'Como a IA generativa é usada no dia a dia?',
+    o:['Não é usada','Uso individual, sem método','Uso frequente com orientações da empresa','Integrada a processos, com revisão humana'] },
+  { p:'ia', t:'Quanto das tarefas repetitivas já está automatizado (No-Code)?',
+    o:['Nada','Poucas tarefas','Várias tarefas','A maioria foi mapeada e automatizada'] },
+  { p:'seg', t:'Como são os acessos e senhas?',
+    o:['Senhas compartilhadas entre a equipe','Senhas individuais, sem MFA','MFA nas contas críticas','MFA em todas as contas e menor privilégio'] },
+  { p:'seg', t:'Como a empresa trata LGPD e o uso de IA?',
+    o:['Sem política nem orientação','Conhecimento informal','Política parcial','Política de LGPD e uso ético de IA, com treinamento'] }
+];
+
+const REC = {
+  infra: {
+    baixo:['Migre servidores locais para a nuvem: use SaaS (ex.: Google Workspace, Microsoft 365) para e-mail e arquivos antes de pensar em IaaS.','Implante backup automatizado seguindo a regra 3-2-1 (3 cópias, 2 mídias, 1 fora do local).','Elimine o computador isolado atuando como servidor e adicione redundância de link de internet.'],
+    medio:['Automatize o backup e teste a restauração periodicamente.','Avalie PaaS ou IaaS (AWS, Azure, GCP) para sistemas próprios que exigem escalabilidade.','Monitore custos na nuvem com práticas de FinOps.'],
+    alto:['Mantenha monitoramento de disponibilidade e plano de recuperação de desastres.','Revise custos com FinOps e dimensione recursos de forma elástica.']
+  },
+  sist: {
+    baixo:['Substitua planilhas soltas por um CRM (clientes e vendas) e um ERP (financeiro e estoque).','Defina uma fonte única da verdade: cada dado deve ter um único lugar de cadastro.','Pare de enviar planilhas por WhatsApp e e-mail; use pastas compartilhadas com controle de acesso.'],
+    medio:['Integre CRM e ERP por API para que vendas alimentem o financeiro automaticamente.','Crie dashboards gerenciais com indicadores confiáveis (vendas, margem, estoque).','Padronize cadastros para evitar duplicidade de clientes.'],
+    alto:['Evolua para dashboards em tempo real e automação de relatórios.','Documente os fluxos de dados e as integrações existentes.']
+  },
+  ia: {
+    baixo:['Mapeie as tarefas repetitivas (copiar e colar, triagem, respostas frequentes) e priorize as de maior volume.','Comece com um assistente de IA para rascunhos e resumos, sempre com revisão humana (Human-in-the-Loop).','Defina uma meta mensurável de ganho de produtividade, como horas economizadas por semana.'],
+    medio:['Crie fluxos No-Code (ex.: Zapier, Make, Power Automate) para triagem, relatórios e atendimento.','Padronize prompts e treine a equipe a validar alucinações antes de usar o resultado.','Meça o ganho obtido e expanda para novos processos.'],
+    alto:['Escale as automações com governança e métricas de qualidade.','Reavalie periodicamente os modelos e fluxos em uso.']
+  },
+  seg: {
+    baixo:['Ative MFA em todas as contas e acabe com senhas compartilhadas; adote um gerenciador de senhas.','Proíba o envio de dados sigilosos de clientes para IAs públicas (Privacy by Design).','Nomeie um responsável pela LGPD e mapeie quais dados pessoais a empresa trata.'],
+    medio:['Aplique o princípio do menor privilégio: cada pessoa acessa só o necessário.','Formalize uma política interna de uso ético de IA e anonimize dados antes de usá-los.','Treine a equipe em cidadania digital e phishing.'],
+    alto:['Realize auditorias periódicas de acesso e simulações de incidentes.','Evolua para Zero Trust e mantenha o registro de tratamento de dados atualizado.']
+  }
+};
+
+const DEMO = { empresa:'Mercado Bom Preço Ltda', setor:'Varejo', porte:'11 a 50', resp:[1,1,0,1,1,0,1,0] };
+
+const $ = id => document.getElementById(id);
+let chart = null;
+
+// Monta as perguntas agrupadas por pilar
+(function montar(){
+  let html = '';
+  PILARES.forEach(pl => {
+    html += `<div><h3 class="font-extrabold mb-2" style="color:${pl.cor}">${pl.nome}</h3><div class="space-y-4">`;
+    PERGUNTAS.forEach((q,i) => {
+      if (q.p !== pl.id) return;
+      html += `<label class="block text-sm font-semibold">${q.t}
+        <select id="q${i}" class="mt-1 font-normal"><option value="">Selecione...</option>
+        ${q.o.map((txt,v)=>`<option value="${v}">${txt}</option>`).join('')}</select></label>`;
+    });
+    html += '</div></div>';
+  });
+  $('perguntas').innerHTML = html;
+})();
+
+function nivel(n){ return n < 40 ? 'baixo' : n < 70 ? 'medio' : 'alto'; }
+
+function classificar(n){
+  if (n < 30) return { nome:'Iniciante', cor:'#b91c1c', d:'Processos majoritariamente manuais e riscos relevantes de dados e segurança.' };
+  if (n < 60) return { nome:'Em Transição', cor:'#c2410c', d:'Há iniciativas digitais, mas ainda isoladas e sem padronização.' };
+  if (n < 85) return { nome:'Conectada', cor:'#0369a1', d:'Sistemas e processos já conversam; faltam refinamentos e governança contínua.' };
+  return { nome:'Líder Digital', cor:'#15803d', d:'Operação integrada, segura e orientada a dados.' };
+}
+
+function calcular(){
+  const aviso = $('aviso');
+  const resp = PERGUNTAS.map((_,i) => $('q'+i).value);
+  if (!$('empresa').value.trim()) { aviso.textContent = 'Informe o nome da empresa.'; aviso.classList.remove('hidden'); return; }
+  if (resp.some(r => r === '')) { aviso.textContent = 'Responda todas as 8 perguntas para gerar o diagnóstico.'; aviso.classList.remove('hidden'); return; }
+  aviso.classList.add('hidden');
+
+  // Cada pilar tem 2 perguntas de 0 a 3 pontos (máximo 6)
+  const notas = {};
+  PILARES.forEach(pl => {
+    const soma = PERGUNTAS.reduce((s,q,i) => q.p === pl.id ? s + Number(resp[i]) : s, 0);
+    notas[pl.id] = Math.round(soma / 6 * 100);
+  });
+  const geral = Math.round(PILARES.reduce((s,pl) => s + notas[pl.id], 0) / PILARES.length);
+  const cls = classificar(geral);
+
+  $('idEmpresa').textContent = `${$('empresa').value.trim()} · ${$('setor').value} · ${$('porte').value} colaboradores`;
+  $('scoreGeral').textContent = geral + '%';
+  $('selo').textContent = cls.nome; $('selo').style.background = cls.cor;
+  $('descSelo').textContent = cls.d;
+
+  $('cards').innerHTML = PILARES.map(pl => `
+    <div class="card p-4 border-l-4" style="border-left-color:${pl.cor}">
+      <p class="text-sm text-slate-600">${pl.nome}</p>
+      <p class="text-3xl font-extrabold">${notas[pl.id]}%</p>
+    </div>`).join('');
+
+  if (chart) chart.destroy();
+  chart = new Chart($('grafico'), {
+    type:'radar',
+    data:{ labels:PILARES.map(p=>p.nome), datasets:[{ label:'Maturidade (%)', data:PILARES.map(p=>notas[p.id]),
+      backgroundColor:'rgba(15,157,138,.25)', borderColor:'#0f9d8a', pointBackgroundColor:'#0f9d8a', borderWidth:2 }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      scales:{ r:{ min:0, max:100, ticks:{ stepSize:25 } } }, plugins:{ legend:{ display:false } } }
+  });
+
+  const ordem = [...PILARES].sort((a,b) => notas[a.id] - notas[b.id]);
+  $('laudo').innerHTML = ordem.map((pl,i) => {
+    const lv = nivel(notas[pl.id]);
+    const rotulo = { baixo:'Prioridade alta', medio:'Prioridade média', alto:'Manutenção' }[lv];
+    return `<div class="border-l-4 pl-4" style="border-left-color:${pl.cor}">
+      <h3 class="font-extrabold">${i+1}º ${pl.nome} <span class="text-sm font-semibold text-slate-600">(${notas[pl.id]}% · ${rotulo})</span></h3>
+      <ul class="list-disc ml-5 mt-2 space-y-1 text-sm">${REC[pl.id][lv].map(r=>`<li>${r}</li>`).join('')}</ul></div>`;
+  }).join('');
+
+  $('resultado').classList.remove('hidden');
+  $('resultado').scrollIntoView({ behavior:'smooth' });
+}
+
+function carregarDemo(){
+  $('empresa').value = DEMO.empresa; $('setor').value = DEMO.setor; $('porte').value = DEMO.porte;
+  DEMO.resp.forEach((v,i) => $('q'+i).value = v);
+  calcular();
+}
+
+function limpar(){
+  $('empresa').value = ''; $('setor').selectedIndex = 0; $('porte').selectedIndex = 0;
+  PERGUNTAS.forEach((_,i) => $('q'+i).value = '');
+  $('resultado').classList.add('hidden'); $('aviso').classList.add('hidden');
+}
+
+$('btnCalc').addEventListener('click', calcular);
+$('btnDemo').addEventListener('click', carregarDemo);
+$('btnLimpar').addEventListener('click', limpar);
+$('btnPrint').addEventListener('click', () => window.print());
+</script>
+</body>
+</html>
